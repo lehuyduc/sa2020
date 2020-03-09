@@ -9,6 +9,6 @@ Students are expected to:
 Student Info
 =========================
 
-* Student Name: *Put your name here*
+* Student Name: Le Huy Duc
 * Student ID: *Put your ID here*
 
