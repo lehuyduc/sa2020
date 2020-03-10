@@ -30,8 +30,35 @@ sort           Videos     .local
 Downloads      Templates  .cache
 Desktop        Documents  examples.desktop
 
+7.1: ls - laR | grep rwx
+drwxr-xr-x 14 lehuyduc lehuyduc 4096 Mar 10 05:51 .
+drwxr-xr-x  3 root     root     4096 Mar  9 20:49 ..
+-rwxr-xr-x  1 lehuyduc lehuyduc  280 Mar 10 05:51 8.sh
+drwx------ 11 lehuyduc lehuyduc 4096 Mar 10 00:53 .cache
+drwx------ 11 lehuyduc lehuyduc 4096 Mar  9 21:02 .config
+drwxr-xr-x  2 lehuyduc lehuyduc 4096 Mar  9 21:01 Desktop
+drwxr-xr-x  2 lehuyduc lehuyduc 4096 Mar  9 21:01 Documents
+drwxr-xr-x  2 lehuyduc lehuyduc 4096 Mar  9 21:01 Downloads
+drwx------  3 lehuyduc lehuyduc 4096 Mar  9 21:01 .gnupg
+drwx------  3 lehuyduc lehuyduc 4096 Mar  9 21:01 .local
+drwxr-xr-x  2 lehuyduc lehuyduc 4096 Mar  9 21:01 Music
+
+
 8. wdiff -s2 file.txt file2.txt	
 hello world
 this is the [-begin-]
 file1.txt: 6 words  5 83% common  0 0% deleted  1 17% changed
 file2.txt: 6 words  5 83% common  0 0% inserted  1 17% changed
+
+8.1:
+#!/bin/bash
+diffLines=`diff $1 $2 | egrep "^(>|<)" | wc -l`
+aLines=`wc -l < $1`
+bLines=`wc -l < $2`
+
+diffPer=`echo "$diffLines * 100 * 5 / ($aLines + $bLines)" | bc`
+echo $diffPer
+similarity=`echo "100-$diffPer" | bc`
+
+echo $similarity
+
