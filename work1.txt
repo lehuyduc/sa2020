@@ -5,7 +5,9 @@
 3. users > sort 
 lehuyduc
 
-5. head -1 /etc/fstab | tail -3 /etc/fstab
+4. last | awk {'print $1'} | sort | uniq -c | sort -r | head -n -1
+
+5. head -1 /etc/fstab && tail -3 /etc/fstab
 UUID=e09b440c-2137-4be5-a1d7-36698c65ac89 /               ext4    errors=remount-ro 0       1
 /swapfile                                 none            swap    sw              0       0
 /dev/fd0        /media/floppy0  auto    rw,user,noauto,exec,utf8 0       0
