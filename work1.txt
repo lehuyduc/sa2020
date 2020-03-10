@@ -1,0 +1,35 @@
+1. users > users
+
+2. ps >> users
+
+3. users > sort 
+lehuyduc
+
+5. head -1 /etc/fstab | tail -3 /etc/fstab
+UUID=e09b440c-2137-4be5-a1d7-36698c65ac89 /               ext4    errors=remount-ro 0       1
+/swapfile                                 none            swap    sw              0       0
+/dev/fd0        /media/floppy0  auto    rw,user,noauto,exec,utf8 0       0
+
+
+6. sed -n '5, 10p' /etc/fstab
+# that works even if disks are added and removed. See fstab(5).
+#
+# <file system> <mount point>   <type>  <options>       <dump>  <pass>
+# / was on /dev/sda1 during installation
+UUID=e09b440c-2137-4be5-a1d7-36698c65ac89 /               ext4    errors=remount-ro 0       1
+/swapfile                                 none            swap    sw              0       0
+
+7. ls -rf
+.config        Music      ..                         3.txt
+.ICEauthority  Public     .bash_logout               .bash_history
+.profile       users      .gnupg                     .bashrc
+users.txt      Pictures   .sudo_as_admin_successful  .
+sort           Videos     .local
+Downloads      Templates  .cache
+Desktop        Documents  examples.desktop
+
+8. wdiff -s2 file.txt file2.txt	
+hello world
+this is the [-begin-]
+file1.txt: 6 words  5 83% common  0 0% deleted  1 17% changed
+file2.txt: 6 words  5 83% common  0 0% inserted  1 17% changed
