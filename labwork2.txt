@@ -1,0 +1,10 @@
+Result from (fast) scheduling program:
+
+FCFS turning: 8.000000 11.600000 12.000000 16.700001
+FCFS: waiting = 7.575000, turning = 12.075001
+
+SJF turning: 8.000000 12.600000 8.000000 16.700001
+SJF: waiting = 6.825000, turning = 11.325001
+
+SRTF turning: 18.000000 5.000000 1.000000 9.100000
+SRTF: waiting = 3.775000, turning = 8.275000
