@@ -20,19 +20,34 @@ struct Queue *makeQueue(int capacity) {
     return q;
 };
 
-void push(struct Queue *q, struct Data data) {
+bool qempty(struct Queue *q) {
+    return q->size==0;
+}
+
+void push_back(struct Queue *q, struct Data data) {
     q->last += 1;
     if (q->last==q->capacity) q->last = 0;
     q->datas[q->last] = data;
+    q->size += 1;
 }
 
-void qpop(struct Queue *q) {
-    q->first += 1;
-    if (q->first==q->capacity) q->first = 0;
+void push_front(struct Queue *q, struct Data data) {
+    q->first -= 1;
+    if (q->first==-1) q->first = q->capacity-1;
+    q->datas[q->first] = data;
+    q->size += 1;
 }
 
 void pop_front(struct Queue *q) {
-    qpop(q);
+    q->first += 1;
+    if (q->first==q->capacity) q->first = 0;
+    q->size -= 1;
+}
+
+void pop_back(struct Queue *q) {
+    q->last -= 1;
+    if (q->last==-1) q->last = q->capacity-1;
+    q->size -= 1;
 }
 
 struct Data front(struct Queue *q) {
