@@ -31,4 +31,4 @@ text:
 
     GETA tmp f n
     PRINTINT tmp
-
+    PRINTLN

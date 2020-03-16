@@ -4,7 +4,39 @@
 #include <pcb.h>
 #include <fstream>
 
+struct CompilerException : public std::exception {
+    const char *msg;
+
+public:
+    CompilerException(const char *mess) {
+        msg = mess;
+    }
+
+    ~CompilerException() {
+        delete msg;
+    }
+
+    const char* what() const throw() {
+        return msg;
+    }
+};
+
 struct Compiler {
+    bool success;
+    string filename;
+
+    //----------    COMPILE ERROR FUNCTION
+    void insNotFound(string filename, int lineNumber, string text) {
+        cout << "Error: unknown instruction at line " << lineNumber << "\n";
+        cout << "Text: " << text << "\n";
+    }
+
+    void varNotFound(string filename, int lineNumber, string text, string varName) {
+        cout << "Error: unknown instruction at line " << lineNumber << "\n";
+        cout << "Text: " << text << "\n";
+        cout << "Unknown var: " << varName << "\n";
+    }
+
     //---------------   BASIC STRING PREPROCESSING
     bool invalidChar(char c) {
         if (c==' ' || c==',' || c==':') return true;
@@ -17,8 +49,6 @@ struct Compiler {
 
         while (s.length() > 0 && invalidChar(s[s.length()-1])) s.erase(s.length()-1, 1);
         while (s.length() > 0 && invalidChar(s[0])) s.erase(0, 1);
-
-        // make the first word uppercase, because instruction should be uppercase
     }
 
     // pos point to the ' ' character, or the end of string s[s.length()]
@@ -33,8 +63,13 @@ struct Compiler {
         return s.substr(from, pos-from);
     }
 
+    bool checkVarExist(string varName, PCB *pcb) {
+        if (isInteger(varName)) return true;
+        return pcb->varExist[varName];
+    }
+
     int* getIntVar(string s, PCB *pcb) {
-        int *res;
+        int *res = 0;
         if (isInteger(s)) {
             res = new int;
             *res = string2int(s);
@@ -65,6 +100,7 @@ struct Compiler {
     // read the text file and make sure it's in right format
     vector<string> file2text(string filename)
     {
+        this->filename = filename;
         vector<string> lines;
         string s;
         ifstream fin(filename);
@@ -77,8 +113,8 @@ struct Compiler {
         return lines;
     }
 
-    void parseVar(vector<string> lines, PCB *pcb) {
-        int i, j, t, n, nLine, len;
+    bool parseVar(vector<string> lines, PCB *pcb) {
+        int i, t, n, nLine, len;
         string line, varName, typeStr, s;
         map<string, int> varExist;
         map<string, int*> varInt;
@@ -119,12 +155,13 @@ struct Compiler {
 
         pcb->varExist = varExist;
         pcb->varInt = varInt;
+        return true;
     }
 
 
     //-----------------------------------------------------------------------------------
-    void parseCode(vector<string> lines, PCB *pcb) {
-        int i, j, t, n, nLine,  len;
+    bool parseCode(vector<string> lines, PCB *pcb) {
+        int i, j, t, n, nLine;
         string line, insName, s, arg, argStr;
         string jumpto, coondition;
 
@@ -139,7 +176,7 @@ struct Compiler {
         j++;
 
 
-        // pre loop to find LABEL positions first
+        // loop to find LABEL positions first
         int insCount = 0;
         for (t=j; t<nLine; t++) {
             insCount++;
@@ -149,14 +186,19 @@ struct Compiler {
             insName = getword(line, i);
             if (insName=="LABEL") {
                 s = getword(line, i);
+                varExist[s] = 1;
                 varInt[s] = new int;
                 *varInt[s] = insCount - 1; // we start counting from 0
             }
         }
+        pcb->varExist = varExist;
+        pcb->varInt = varInt;
 
+        insCount = 0;
         for (t=j; t<nLine; t++ ) {
             line = lines[t];
-            if (debug) cout << line << "\n";
+            if (debug) cout << insCount << ": " << line << "\n";
+            insCount++;
 
             args.clear();
             argStr = "";
@@ -164,44 +206,62 @@ struct Compiler {
 
             i = 0;
             insName = getword(line, i);
+            if (name2ins(insName)==0) {
+                insNotFound(filename, insCount, line);
+                return false;
+            }
             i++;
 
             if (insName=="JUMPIF") {
                 string jumpto = getword(line, i);
                 string condition = getword(line, i);
 
+                if (!checkVarExist(jumpto, pcb)) {
+                    varNotFound(filename, insCount, line, jumpto);
+                    return 0;
+                }
+                if (!checkVarExist(condition, pcb)) {
+                    varNotFound(filename, insCount, line, condition);
+                    return 0;
+                }
+
                 args.push_back(&pcb->counter);
-                args.push_back(varInt[jumpto]);
-                args.push_back(varInt[condition]);
+                args.push_back(getIntVar(jumpto, pcb));
+                args.push_back(getIntVar(condition, pcb));
+
                 instructions.push_back(Instruction(name2ins(insName), args, argStr, insName));
                 continue;
             }
 
             while (i < n) {
                 arg = getword(line, i);
-
                 i++;
-                if (isInteger(arg)) {
-                    int *c = new int;
-                    (*c) = string2int(arg);
-                    args.push_back(c);
+                if (!checkVarExist(arg, pcb)) {
+                    varNotFound(filename, insCount, line, arg);
+                    return 0;
                 }
-                else {
-                    args.push_back(varInt[arg]);
-                }
+                args.push_back(getIntVar(arg, pcb));
             }
+
             instructions.push_back(Instruction(name2ins(insName), args, argStr, insName));
         }
 
         pcb->varExist = varExist;
         pcb->varInt = varInt;
         pcb->instructions = instructions;
+        return true;
     }
 
-    void compileFile(string filename, PCB *pcb) {
+    bool compileFile(string filename, PCB *pcb) {
+        success = 1;
         pcb->clear();
         vector<string> lines = file2text(filename);
-        parseVar(lines, pcb);
-        parseCode(lines, pcb);
+        if (!parseVar(lines, pcb)) success = 0;
+        if (success) if (!parseCode(lines, pcb)) success = 0;
+
+        if (success) cout << filename << " compilation successful\n";
+        else cout << filename << " compilation failed\n";
+
+        return success;
     }
 };

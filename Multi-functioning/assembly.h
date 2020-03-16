@@ -2,7 +2,6 @@
 #include <vector>
 #include <iostream>
 using namespace std;
-const int INT = 0, FLOAT = 1, STRING = 2;
 
 typedef void (*InstructionFunc)(vector<int*>&, string&);
 
@@ -122,18 +121,23 @@ void GETA(vector<int*>& args, string& str) {
 //  OUTPUT INSTRUCTION
 void PRINTINT(vector<int*>& args, string& str) {
     printf("%d ",*(args[0]));
+    fflush(stdout);
 }
 
 void PRINTLN(vector<int*>& args, string& str) {
     printf("\n");
+    fflush(stdout);
 }
 
 InstructionFunc name2ins(string s)
 {
     if (s=="INC") return &INC;
+    else if (s=="DEC") return &DEC;
     else if (s=="ADD") return &ADD;
     else if (s=="SUB") return &SUB;
     else if (s=="MUL") return &MUL;
+    else if (s=="DIV") return &DIV;
+    else if (s=="MOD") return &MOD;
     else if (s=="SET") return &SET;
     else if (s=="CMPE") return &CMPE;
     else if (s=="CMPL") return &CMPL;
@@ -145,7 +149,8 @@ InstructionFunc name2ins(string s)
     else if (s=="PRINTINT") return &PRINTINT;
     else if (s=="PRINTLN") return &PRINTLN;
 
-    cout << "unknown name: " << s << "\n";
+    return 0;
+    cout << "crash because: " << s << "\n";
     throw("unknown name");
 }
 

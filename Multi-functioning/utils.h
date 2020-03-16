@@ -1,7 +1,9 @@
-#ifdef LINUX
+#pragma once
+
+#ifdef __linux_
 #include <unistd.h>
 #endif
-#ifdef WINDOWS
+#ifdef _WIN32
 #include <windows.h>
 #endif
 
@@ -12,10 +14,10 @@ using namespace std;
 
 void mySleep(int sleepMs)
 {
-#ifdef LINUX
+#ifdef __linux_
     usleep(sleepMs * 1000);   // usleep takes sleep time in us (1 millionth of a second)
 #endif
-#ifdef WINDOWS
+#ifdef _WIN32
     Sleep(sleepMs);
 #endif
 }

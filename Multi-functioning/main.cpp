@@ -5,33 +5,52 @@
 #include <vector>
 #include <map>
 #include <fstream>
+#include <deque>
 using namespace std;
 
-void roundrobin()
-{
+void fcfs(deque<PCB*> pcbs) {
+    PCB *pcb;
+    while (!pcbs.empty()) {
+        pcb = pcbs.front(); pcbs.pop_front();
+        pcb->runAll();
+    }
+}
 
+void roundrobin(deque<PCB*> pcbs, int timeSlice)
+{
+    PCB *pcb;
+    while (!pcbs.empty()) {
+        pcb = pcbs.front(); pcbs.pop_front();
+        pcb->runForMs(timeSlice);
+        if (!pcb->finished()) pcbs.push_back(pcb);
+    }
 }
 
 int main()
 {
-    PCB pcb;
+    deque<PCB*> pcbs;
+    PCB pcb1, pcb2, pcb3;
     Compiler compiler;
 
-    compiler.compileFile("fibonacci.as",&pcb);
+    compiler.compileFile("fibonacci.as", &pcb1);
+    compiler.compileFile("gcd.as",&pcb2);
+    compiler.compileFile("fibonacci2.as",&pcb3);
 
-    cout << "\n";
-    map<string, int*> varInt = pcb.varInt;
-    map<string, int*>::iterator it;
-    varInt = pcb.varInt;
-    for (it = varInt.begin(); it!=varInt.end(); it++) {
-        cout << (it->first) << " " << (it->second) << '\n';
-    }
-    cout << "Done compiling \n\n";
+    cout << "\n\n***************TESTING FIRST-COME FIRST-SERVE***************\n\n";
+    pcbs.push_back(&pcb1);
+    pcbs.push_back(&pcb2);
+    pcbs.push_back(&pcb3);
+    fcfs(pcbs);
 
-    pcb.run();
+    cout << "\n\n***************TESTING ROUND ROBIN***************\n\n";
+    compiler.compileFile("fibonacci.as", &pcb1);
+    compiler.compileFile("gcd.as",&pcb2);
+    compiler.compileFile("fibonacci2.as",&pcb3);
 
-    compiler.compileFile("fibonacci2.as",&pcb);
-    pcb.run();
+    pcbs.push_back(&pcb1);
+    pcbs.push_back(&pcb2);
+    pcbs.push_back(&pcb3);
+    roundrobin(pcbs, 50);
 
     //cout << "Hello world!" << endl;
     return 0;

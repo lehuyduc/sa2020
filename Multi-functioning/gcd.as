@@ -1,5 +1,5 @@
 var:
-    int i n x y tmp1 tmp2 condi res
+    int i n x y tmp condi res
     int[] a[100] b[100]
 
 text:
@@ -38,9 +38,13 @@ text:
             SET x y
             SET y tmp
 
-            JUMPIF
+            JUMPIF GCD 1
 
         LABEL RESULT:
             PRINTINT x      // x is the gcd after the function
+
+        INC i
         CMPL condi i n
-    JUMPIF LOOP1 con
+    JUMPIF LOOP1 condi
+
+    PRINTLN

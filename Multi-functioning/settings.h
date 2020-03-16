@@ -1,2 +1,2 @@
 #pragma once
-const int debug = 1;
+const int debug = 0;
