@@ -1,0 +1,36 @@
+# depslib dependency file v1.0
+1584332546 source:c:\users\lehuy\documents\system architecture\code\multifunction++\main.cpp
+	<utils.h>
+	<assembly.h>
+	<compiler.h>
+	<iostream>
+	<vector>
+	<map>
+	<fstream>
+
+1584330297 c:\users\lehuy\documents\system architecture\code\multifunction++\utils.h
+	<unistd.h>
+	<windows.h>
+	<settings.h>
+	<string>
+	<time.h>
+
+1584330847 c:\users\lehuy\documents\system architecture\code\multifunction++\assembly.h
+	<string>
+	<vector>
+	<iostream>
+
+1584333230 c:\users\lehuy\documents\system architecture\code\multifunction++\compiler.h
+	<settings.h>
+	<string>
+	<map>
+	<pcb.h>
+	<fstream>
+
+1584332003 c:\users\lehuy\documents\system architecture\code\multifunction++\pcb.h
+	<settings.h>
+	<map>
+	<vector>
+
+1584330391 c:\users\lehuy\documents\system architecture\code\multifunction++\settings.h
+
